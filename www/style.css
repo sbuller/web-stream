@@ -1,0 +1,53 @@
+@font-face {
+	font-family: 'Roboto';
+	font-style: normal;
+	font-weight: 400;
+	src: local('Roboto'), local('Roboto-Regular'), url(roboto.ttf) format('truetype');
+}
+@font-face {
+	font-family: 'Material Icons';
+	font-style: normal;
+	font-weight: 400;
+	src: url(material-icons.ttf) format('truetype');
+}
+
+.material-icons {
+	font-family: 'Material Icons';
+	font-weight: normal;
+	font-style: normal;
+	font-size: 24px;
+	line-height: 1;
+	letter-spacing: normal;
+	text-transform: none;
+	display: inline-block;
+	white-space: nowrap;
+	word-wrap: normal;
+	direction: ltr;
+}
+#vid {
+	margin: 20px;
+}
+video {
+	width: 100%;
+}
+.mdl-layout__container {
+	position: relative;
+}
+.mdl-layout__drawer {
+	position: fixed;
+}
+#nostream {
+	display: none;
+	margin: 20px;
+	background: white;
+	color: black;
+	height: 60px;
+	line-height: 60px;
+	text-align: center;
+	font-size: 24px;
+	font-family: 'Roboto';
+}
+body {
+	background: #33393B;
+	color: white;
+}

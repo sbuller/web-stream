@@ -1,0 +1,52 @@
+<!doctype HTML>
+<html lang=en>
+<head>
+	<meta charset=utf8>
+	<title>Video Streaming</title>
+
+	<meta name=mobile-web-app-capable content=yes>
+	<link rel=icon sizes=192x192 href="TODO">
+
+	<meta name=apple-mobile-web-app-capable content=yes>
+	<meta name=apple-mobile-web-app-status-bar-style content=black>
+	<meta name=apple-mobile-web-app-title content="TODO">
+	<link rel=apple-touch-icon-precomposed href="TODO">
+
+	<link rel="shortcut icon" href="TODO">
+
+	<!-- fonts from googleapis, material from getmdl.io, hls.js -->
+	<link rel=stylesheet href=material.indigo-pink.min.css>
+	<link rel=stylesheet href=style.css>
+</head>
+<body>
+<div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
+	<header class="mdl-layout__header">
+		<div class="mdl-layout__header-row">
+			<!-- Title -->
+			<span class="mdl-layout-title">Video</span>
+			<!-- Add spacer, to align navigation to the right -->
+			<div class="mdl-layout-spacer"></div>
+		</div>
+	</header>
+	<div class="mdl-layout__drawer">
+		<span class="mdl-layout-title">Streams</span>
+		<nav class="mdl-navigation"><a class=mdl-navigation__link id="streamLink" href="#">Live</a></nav>
+		<span class="mdl-layout-title">Recorded</span>
+		<nav class="mdl-navigation" id=menu></nav>
+	</div>
+	<main class="mdl-layout__content">
+	<div class="page-content"><!-- Your content goes here -->
+		<div class=container id=vid>
+			<video controls data-setup="{}"></video>
+		</div>
+		<div id=nostream>Stream Offline</div>
+	</div>
+	</main>
+</div>
+
+
+<script defer src=material.min.js></script>
+<script src=hls.min.js></script>
+<script src=site.js></script>
+</body>
+</html>
