@@ -1,0 +1,1 @@
+nginx apache2-utils pwgen unattended-upgrades acmetool libnginx-mod-http-lua libnginx-mod-rtmp ffmpeg ufw
