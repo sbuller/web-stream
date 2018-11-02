@@ -1,0 +1,121 @@
+server {
+	listen 443 ssl http2;
+	listen [::]:443 ssl http2;
+
+	server_name _;
+	root /var/stream/www;
+
+	# SSL
+	ssl_certificate /var/stream/conf/fullchain;
+	ssl_certificate_key /var/stream/conf/privkey;
+	ssl_trusted_certificate /var/stream/conf/fullchain;
+
+	# security headers
+	add_header X-Frame-Options "SAMEORIGIN" always;
+	add_header X-XSS-Protection "1; mode=block" always;
+	add_header X-Content-Type-Options "nosniff" always;
+	add_header Referrer-Policy "origin-when-cross-origin" always;
+	#add_header Content-Security-Policy "default-src 'self'" always;
+	add_header Strict-Transport-Security "max-age=31536000; includeSubDomains; preload" always;
+
+	location / {
+		try_files $uri $uri/ =404;
+		auth_basic "Restricted Content";
+		auth_basic_user_file /var/stream/conf/htpasswd;
+	}
+
+	location /admin/ {
+		auth_basic "Restricted Content";
+		auth_basic_user_file /var/stream/conf/htpasswd;
+		access_by_lua_block {
+			local user = ngx.var.remote_user
+			ngx.log(ngx.ERR, "admin access check for ", user)
+			if user == "admin" then
+				return
+			else
+				ngx.log(ngx.ERR, "forbidden")
+				return ngx.exit(403)
+			end
+			return
+		}
+
+		location /admin/index.html {
+			content_by_lua_block {
+				local f = assert(io.open("/var/stream/conf/stream-key", "rb"))
+				local streamkey = f:read("*all")
+				f:close()
+				ngx.say("stream-key: ", streamkey)
+				ngx.say("<form action=newuuid>")
+				ngx.say("<br><input type=submit value=Reset>")
+			}
+		}
+		location /admin/newuuid {
+			content_by_lua_block {
+				os.execute("/usr/bin/uuidgen -r >/var/stream/conf/stream-key")
+				ngx.redirect("index.html")
+			}
+		}
+		location /admin/stats {
+			stub_status;
+		}
+	}
+
+	location /hls/ {
+		types {
+			application/vnd.apple.mpegurl m3u8;
+		}
+		root /var/stream;
+		open_file_cache off;
+		add_header 'Cache-Control' 'no-cache';
+		auth_basic "Restricted Content";
+		auth_basic_user_file /var/stream/conf/htpasswd;
+	}
+
+	location /video/ {
+		root /var/stream;
+		autoindex on;
+		autoindex_format json;
+		auth_basic "Restricted Content";
+		auth_basic_user_file /var/stream/conf/htpasswd;
+	}
+
+	# . files
+	location ~ /\. {
+		deny all;
+	}
+
+	# gzip
+	gzip on;
+	gzip_vary on;
+	gzip_proxied any;
+	gzip_comp_level 6;
+	gzip_types text/plain text/css text/xml application/json application/javascript application/xml+rss application/atom+xml image/svg+xml;
+
+}
+
+# RTMP stream-key check; listen only locally.
+server {
+	listen localhost:8081;
+	location /check {
+		lua_need_request_body on;
+		access_by_lua_block {
+			local args, err = ngx.req.get_post_args()
+
+			if not args then
+				ngx.exit(403)
+			end
+
+			local f = assert(io.open("/var/stream/conf/stream-key", "rb"))
+			local streamkey = f:read("*all")
+			streamkey = string.gsub(streamkey, "%s$", "")
+			f:close()
+
+			ngx.log(ngx.ERR, "Name: ", args.name)
+			if args.name == streamkey then
+				ngx.exit(200)
+			end
+
+			ngx.exit(403)
+		}
+	}
+}
