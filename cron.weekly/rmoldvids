@@ -1,0 +1,2 @@
+#!/bin/sh
+find /var/stream/video -mtime +120 -delete

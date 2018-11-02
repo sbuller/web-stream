@@ -1,0 +1,2 @@
+#!/bin/sh
+find /tmp -maxdepth 1 -name 'live*.flv' -mtime +0 -delete
